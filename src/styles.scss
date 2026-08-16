@@ -1,1 +1,174 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --background: #f4f8f6;
+  --surface: #fff;
+  --surface-raised: #f1f6f3;
+  --text: #14231d;
+  --text-soft: #344c42;
+  --text-muted: #657970;
+  --text-faint: #9aa9a2;
+  --primary: #0b9b69;
+  --primary-strong: #087954;
+  --primary-soft: #dcf8eb;
+  --primary-border: #a9e9ce;
+  --danger: #bd3535;
+  --danger-soft: #feebeb;
+  --border-subtle: #deebe4;
+  --border-strong: #c5d7ce;
+  --shadow-sm: 0 0.35rem 1.25rem rgb(22 63 47 / 7%);
+  --shadow-lg: 0 1rem 3rem rgb(15 54 39 / 16%);
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  --background: #0d1713;
+  --surface: #14221c;
+  --surface-raised: #1a2b23;
+  --text: #edf8f2;
+  --text-soft: #c8d9d1;
+  --text-muted: #94aaa0;
+  --text-faint: #61766d;
+  --primary: #4bd19b;
+  --primary-strong: #72e0b3;
+  --primary-soft: #143a2b;
+  --primary-border: #276247;
+  --danger: #ff8d8d;
+  --danger-soft: #3c2020;
+  --border-subtle: #263930;
+  --border-strong: #385047;
+  --shadow-sm: 0 0.35rem 1.25rem rgb(0 0 0 / 16%);
+  --shadow-lg: 0 1rem 3rem rgb(0 0 0 / 34%);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --background: #0d1713;
+    --surface: #14221c;
+    --surface-raised: #1a2b23;
+    --text: #edf8f2;
+    --text-soft: #c8d9d1;
+    --text-muted: #94aaa0;
+    --text-faint: #61766d;
+    --primary: #4bd19b;
+    --primary-strong: #72e0b3;
+    --primary-soft: #143a2b;
+    --primary-border: #276247;
+    --danger: #ff8d8d;
+    --danger-soft: #3c2020;
+    --border-subtle: #263930;
+    --border-strong: #385047;
+    --shadow-sm: 0 0.35rem 1.25rem rgb(0 0 0 / 16%);
+    --shadow-lg: 0 1rem 3rem rgb(0 0 0 / 34%);
+    color-scheme: dark;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  min-height: 100%;
+  background: var(--background);
+}
+body {
+  min-width: 20rem;
+  min-height: 100dvh;
+  margin: 0;
+  color: var(--text);
+  background: var(--background);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  transition:
+    border-color 0.16s ease,
+    background-color 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 70%, transparent);
+  outline-offset: 3px;
+}
+.page {
+  padding-top: clamp(2.2rem, 7vw, 4.5rem);
+}
+.card {
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.9rem;
+  font-weight: 780;
+  cursor: pointer;
+}
+.primary-button {
+  border: 1px solid var(--primary-strong);
+  color: #fff;
+  background: var(--primary-strong);
+  box-shadow: 0 0.45rem 1rem rgb(8 121 84 / 20%);
+}
+.secondary-button {
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  background: var(--surface-raised);
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+:root[data-theme='dark'] .primary-button {
+  color: #062b1d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .primary-button {
+    color: #062b1d;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

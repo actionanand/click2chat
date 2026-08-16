@@ -1,0 +1,110 @@
+<div class="page call-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Your phone, your history</p>
+      <h1>Recent calls</h1>
+      <p>Pick up a conversation on WhatsApp without saving the number.</p>
+    </div>
+    @if (supported && calls().length) {
+      <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadCalls()">
+        <app-icon name="refresh" />
+        <span>Refresh</span>
+      </button>
+    }
+  </header>
+
+  @if (!supported) {
+    <section class="platform-card card" aria-labelledby="android-title">
+      <span class="platform-icon"><app-icon name="smartphone" /></span>
+      <div>
+        <p class="eyebrow">Android feature</p>
+        <h2 id="android-title">Your calls stay on your device</h2>
+        <p>
+          The installed Android app can show recent call history here. The browser version still
+          supports direct WhatsApp chats from the New chat tab.
+        </p>
+      </div>
+      <span class="privacy-pill"><app-icon name="shield" /> Private by design</span>
+    </section>
+  } @else if (loading() && !calls().length) {
+    <section class="loading-card card" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <h2>Loading recent calls</h2>
+      <p>Android may ask for call history permission.</p>
+    </section>
+  } @else if (error()) {
+    <section class="error-card card" role="alert">
+      <span class="error-icon"><app-icon name="phone-missed" /></span>
+      <h2>Call history is unavailable</h2>
+      <p>{{ error() }}</p>
+      <button class="primary-button" type="button" (click)="loadCalls()">
+        <app-icon name="refresh" /> Try again
+      </button>
+    </section>
+  } @else if (!calls().length) {
+    <section class="empty-card card">
+      <span class="empty-icon"><app-icon name="history" /></span>
+      <h2>No recent calls</h2>
+      <p>New calls will appear here after you refresh.</p>
+      <button class="secondary-button" type="button" (click)="loadCalls()">
+        <app-icon name="refresh" /> Refresh
+      </button>
+    </section>
+  } @else {
+    <div class="call-groups" aria-label="Recent call history">
+      @for (group of groups(); track group.label) {
+        <section class="call-group" [attr.aria-labelledby]="'group-' + $index">
+          <h2 [id]="'group-' + $index">{{ group.label }}</h2>
+          <div class="call-list card">
+            @for (call of group.calls; track call.id) {
+              <article
+                class="call-row"
+                [class.unsuccessful]="
+                  call.type === 'missed' || call.type === 'rejected' || call.type === 'blocked'
+                "
+              >
+                <span class="call-type"><app-icon [name]="callIcon(call)" /></span>
+                <div class="call-copy">
+                  <strong>{{ displayName(call) }}</strong>
+                  <span class="call-meta">
+                    @if (displayNumber(call)) {
+                      <span>{{ displayNumber(call) }}</span
+                      ><span aria-hidden="true">·</span>
+                    }
+                    <span>{{ callTypeLabel(call) }}</span
+                    ><span aria-hidden="true">·</span><span>{{ callTime(call.timestamp) }}</span>
+                    @if (duration(call.durationSeconds)) {
+                      <span aria-hidden="true">·</span
+                      ><span>{{ duration(call.durationSeconds) }}</span>
+                    }
+                  </span>
+                </div>
+                <button
+                  class="message-button"
+                  type="button"
+                  [disabled]="!canMessage(call)"
+                  [attr.aria-label]="
+                    canMessage(call)
+                      ? 'Message ' + displayName(call) + ' on WhatsApp'
+                      : 'This call has no messageable number'
+                  "
+                  (click)="openChat(call)"
+                >
+                  <app-icon name="message" />
+                </button>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>
+
+@if (appChoice(); as choice) {
+  <app-whatsapp-app-chooser
+    [packages]="choice.packages"
+    (closed)="appChoice.set(null)"
+    (chosen)="openIn($event)"
+  />
+}
