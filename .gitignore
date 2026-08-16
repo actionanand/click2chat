@@ -8,8 +8,13 @@
 
 # Node
 /node_modules
+/android
 npm-debug.log
 yarn-error.log
+/release-keystore.jks
+/keystore.b64.txt
+/click2chat-key.pem
+/click2chat-cert.pem
 
 # IDEs and editors
 .idea/
