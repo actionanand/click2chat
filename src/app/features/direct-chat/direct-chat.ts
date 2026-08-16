@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { form, FormField, maxLength, pattern, required, validate } from '@angular/forms/signals';
-import { SORTED_COUNTRY_CODES } from '../../core/data/country-codes';
+import { countryNameForCallingCode, SORTED_COUNTRY_CODES } from '../../core/data/country-codes';
 import {
   NativeIntegrationService,
   WhatsAppPackage,
@@ -54,26 +54,29 @@ export class DirectChat {
     maxLength(fields.message, 4096, { message: 'Keep the message under 4,096 characters.' });
   });
 
+  constructor() {
+    effect(() => {
+      const value = this.chatModel();
+      const country = countryNameForCallingCode(value.callingCode, value.country);
+      if (country === value.country) return;
+      this.chatModel.update((current) => ({ ...current, country }));
+      this.saveCountry(country);
+    });
+  }
+
   protected selectCountry(name: string): void {
     const country = SORTED_COUNTRY_CODES.find((entry) => entry.name === name);
     this.chatModel.update((value) => ({
       ...value,
       country: name,
-      callingCode: country?.callingCode || value.callingCode,
+      callingCode: country?.callingCode ?? '',
     }));
-    try {
-      this.document.defaultView?.localStorage.setItem('click2chat-country', name);
-    } catch {
-      // The selection remains active even if browser storage is unavailable.
-    }
+    this.saveCountry(name);
   }
 
   protected normalizeCallingCode(): void {
     const value = this.chatForm.callingCode().value().trim();
     if (value && !value.startsWith('+')) this.chatForm.callingCode().value.set(`+${value}`);
-    const normalized = value.startsWith('+') ? value : `+${value}`;
-    const match = SORTED_COUNTRY_CODES.find((country) => country.callingCode === normalized);
-    if (match) this.chatForm.country().value.set(match.name);
   }
 
   protected openChat(event: Event): void {
@@ -137,9 +140,17 @@ export class DirectChat {
     const country = SORTED_COUNTRY_CODES.find((entry) => entry.name === countryName);
     return {
       country: country?.name ?? 'India',
-      callingCode: country?.callingCode || '+91',
+      callingCode: country ? country.callingCode : '+91',
       number: '',
       message: '',
     };
+  }
+
+  private saveCountry(country: string): void {
+    try {
+      this.document.defaultView?.localStorage.setItem('click2chat-country', country);
+    } catch {
+      // The selection remains active even if browser storage is unavailable.
+    }
   }
 }
