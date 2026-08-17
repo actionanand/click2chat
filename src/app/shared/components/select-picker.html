@@ -16,14 +16,19 @@
 </button>
 
 @if (open()) {
-  <div class="picker-overlay">
+  <dialog
+    #dialog
+    class="picker-dialog"
+    [attr.aria-label]="sheetTitle()"
+    (cancel)="handleCancel($event)"
+  >
     <button
       class="picker-backdrop"
       type="button"
       aria-label="Close options"
       (click)="close()"
     ></button>
-    <section class="picker-sheet" role="dialog" aria-modal="true" [attr.aria-label]="sheetTitle()">
+    <div class="picker-sheet">
       <header>
         <strong>{{ sheetTitle() }}</strong>
         <button type="button" aria-label="Close options" (click)="close()">
@@ -38,6 +43,7 @@
             #searchInput
             type="search"
             autocomplete="off"
+            enterkeyhint="search"
             placeholder="Search countries or codes"
             [value]="search()"
             (input)="updateSearch($event)"
@@ -72,6 +78,6 @@
           <p class="empty-options">No matching options</p>
         }
       </div>
-    </section>
-  </div>
+    </div>
+  </dialog>
 }

@@ -130,6 +130,10 @@ main {
     background: color-mix(in srgb, var(--surface) 92%, transparent);
     box-shadow: var(--shadow-lg);
     backdrop-filter: blur(18px);
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease,
+      visibility 0.16s ease;
   }
   .mobile-nav a {
     display: grid;

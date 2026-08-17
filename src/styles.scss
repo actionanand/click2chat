@@ -83,6 +83,19 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+@media (max-width: 720px) {
+  body:has(input:focus, textarea:focus, dialog[open]) app-root .mobile-nav {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(calc(100% + 1rem + env(safe-area-inset-bottom)));
+  }
+  input,
+  textarea,
+  app-select-picker {
+    scroll-margin-block: 6rem;
+  }
+}
 button,
 input,
 textarea {
