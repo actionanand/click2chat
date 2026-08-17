@@ -40,18 +40,30 @@ export class SelectPicker {
     );
   });
   private readonly trigger = viewChild<ElementRef<HTMLButtonElement>>('trigger');
+  private readonly dialog = viewChild<ElementRef<HTMLDialogElement>>('dialog');
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   protected openPicker(): void {
     this.search.set('');
     this.open.set(true);
-    globalThis.setTimeout(() => this.searchInput()?.nativeElement.focus(), 0);
+    globalThis.setTimeout(() => {
+      const dialog = this.dialog()?.nativeElement;
+      if (!dialog?.open) dialog?.showModal();
+      if (this.searchable()) this.searchInput()?.nativeElement.focus({ preventScroll: true });
+    }, 0);
   }
 
   protected close(restoreFocus = true): void {
     if (!this.open()) return;
+    const dialog = this.dialog()?.nativeElement;
+    if (dialog?.open) dialog.close();
     this.open.set(false);
     if (restoreFocus) globalThis.setTimeout(() => this.trigger()?.nativeElement.focus(), 0);
+  }
+
+  protected handleCancel(event: Event): void {
+    event.preventDefault();
+    this.close();
   }
 
   protected select(value: string): void {

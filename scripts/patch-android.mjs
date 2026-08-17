@@ -74,13 +74,21 @@ manifest = manifest.replace(/<application\b[^>]*>/, (application) => {
 });
 manifest = manifest.replace(
   /<activity\b(?=[^>]*android:name="\.MainActivity")[^>]*>/,
-  (activity) =>
-    activity.includes('android:theme=')
+  (activity) => {
+    let patchedActivity = activity.includes('android:theme=')
       ? activity.replace(
           /android:theme="[^"]*"/,
           'android:theme="@style/AppTheme.NoActionBarLaunch"',
         )
-      : activity.replace(/>$/, '\n            android:theme="@style/AppTheme.NoActionBarLaunch">'),
+      : activity.replace(/>$/, '\n            android:theme="@style/AppTheme.NoActionBarLaunch">');
+    patchedActivity = patchedActivity.includes('android:windowSoftInputMode=')
+      ? patchedActivity.replace(
+          /android:windowSoftInputMode="[^"]*"/,
+          'android:windowSoftInputMode="adjustResize"',
+        )
+      : patchedActivity.replace(/>$/, '\n            android:windowSoftInputMode="adjustResize">');
+    return patchedActivity;
+  },
 );
 await writeFile(manifestPath, manifest, 'utf8');
 
