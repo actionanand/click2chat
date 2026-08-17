@@ -88,6 +88,12 @@ test -s release-keystore.jks && base64 -w 0 release-keystore.jks > keystore.b64.
 npm run keystore:type
 ```
 
+provide the password non-interactively only in a trusted local shell:
+
+```bash
+npm run generate-keystore -- --password 'YOUR_STRONG_PASSWORD'
+```
+
 Never commit the keystore, its Base64 representation, or passwords. Keep an offline backup of the release key.
 
 ## Device call history
