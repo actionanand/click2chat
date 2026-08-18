@@ -62,8 +62,10 @@
 .picker-sheet {
   position: relative;
   z-index: 1;
+  display: flex;
   width: min(100%, 36rem);
   max-height: calc(100dvh - max(1rem, env(safe-area-inset-top)));
+  flex-direction: column;
   margin-inline: auto;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
@@ -71,12 +73,7 @@
   color: var(--text);
   background: var(--surface);
   box-shadow: 0 -1rem 4rem rgb(0 0 0 / 30%);
-}
-.picker-sheet {
-  display: grid;
-  max-height: calc(100dvh - max(1rem, env(safe-area-inset-top)));
   padding-bottom: env(safe-area-inset-bottom);
-  overflow: hidden;
 }
 .picker-sheet header {
   display: flex;
