@@ -34,6 +34,9 @@
   gap: 1rem;
   margin-inline: auto;
 }
+:host(:not(.call-history-enabled)) .header-inner {
+  grid-template-columns: 1fr auto;
+}
 .brand {
   display: flex;
   width: fit-content;

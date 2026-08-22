@@ -10,6 +10,7 @@ import { buildWhatsAppUrl, digitsOnly, normalizePhone } from '../../core/utils/p
 import { AppIcon } from '../../shared/components/app-icon';
 import { SelectPicker, SelectPickerOption } from '../../shared/components/select-picker';
 import { WhatsAppAppChooser } from '../../shared/components/whatsapp-app-chooser';
+import { environment } from '../../../environments/environment';
 
 interface ChatModel {
   readonly country: string;
@@ -130,17 +131,17 @@ export class DirectChat {
   }
 
   private initialModel(): ChatModel {
-    let countryName = 'India';
+    let countryName = environment.defaultCountry;
     try {
       countryName =
         this.document.defaultView?.localStorage.getItem('click2chat-country') || countryName;
     } catch {
-      // India is the safe default when browser storage is unavailable.
+      // The configured country remains selected when browser storage is unavailable.
     }
     const country = SORTED_COUNTRY_CODES.find((entry) => entry.name === countryName);
     return {
-      country: country?.name ?? 'India',
-      callingCode: country ? country.callingCode : '+91',
+      country: country?.name ?? environment.defaultCountry,
+      callingCode: country?.callingCode ?? '+91',
       number: '',
       message: '',
     };

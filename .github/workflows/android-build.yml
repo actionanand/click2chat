@@ -16,7 +16,6 @@ concurrency:
 env:
   MIN_SDK_VERSION: 24
   TARGET_SDK_VERSION: 36
-  ENABLE_DEVICE_CALL_LOG: true
   RELEASE_BASENAME: click2chat
 
 jobs:
