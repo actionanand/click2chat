@@ -1,0 +1,28 @@
+<dialog
+  #dialog
+  class="call-dialog"
+  aria-labelledby="call-confirmation-title"
+  aria-describedby="call-confirmation-message"
+  (cancel)="cancel($event)"
+>
+  <button class="modal-scrim" type="button" aria-label="Cancel call" (click)="cancel()"></button>
+  <section class="call-confirmation">
+    <span class="call-icon"><app-icon name="phone" /></span>
+    <div>
+      <p class="eyebrow">Phone call</p>
+      <h2 id="call-confirmation-title">Call {{ contactName() }}?</h2>
+      <p id="call-confirmation-message">
+        Open your phone dialler with <strong>{{ phoneNumber() }}</strong
+        >? Review the number, then tap Call in the phone app.
+      </p>
+    </div>
+    <div class="confirmation-actions">
+      <button #cancelButton class="secondary-button" type="button" (click)="cancel()">
+        Cancel
+      </button>
+      <button class="primary-button" type="button" (click)="confirm()">
+        <app-icon name="phone" /> Call
+      </button>
+    </div>
+  </section>
+</dialog>

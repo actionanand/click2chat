@@ -7,6 +7,7 @@ import {
 } from '../../core/services/native-integration.service';
 import { digitsOnly, displayPhone } from '../../core/utils/phone-number';
 import { AppIcon } from '../../shared/components/app-icon';
+import { CallConfirmation } from '../../shared/components/call-confirmation';
 import { WhatsAppAppChooser } from '../../shared/components/whatsapp-app-chooser';
 import { environment } from '../../../environments/environment';
 
@@ -17,7 +18,7 @@ interface CallGroup {
 
 @Component({
   selector: 'app-call-history',
-  imports: [AppIcon, WhatsAppAppChooser],
+  imports: [AppIcon, CallConfirmation, WhatsAppAppChooser],
   templateUrl: './call-history.html',
   styleUrl: './call-history.scss',
 })
@@ -28,6 +29,7 @@ export class CallHistory {
   protected readonly calls = signal<readonly DeviceCallHistoryEntry[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal('');
+  protected readonly callConfirmation = signal<DeviceCallHistoryEntry | null>(null);
   protected readonly appChoice = signal<{
     readonly number: string;
     readonly packages: readonly WhatsAppPackage[];
@@ -73,6 +75,24 @@ export class CallHistory {
     if (packages.length === 1 && this.native.openWhatsAppIn(number, '', packages[0])) return;
     if (this.native.openWhatsApp(number, '')) return;
     this.document.defaultView?.open(`https://wa.me/${number}`, '_blank', 'noopener,noreferrer');
+  }
+
+  protected confirmCall(call: DeviceCallHistoryEntry): void {
+    if (this.canCall(call)) this.callConfirmation.set(call);
+  }
+
+  protected cancelCall(): void {
+    this.callConfirmation.set(null);
+  }
+
+  protected call(): void {
+    const call = this.callConfirmation();
+    if (!call) return;
+    const number = this.dialableNumber(call.number);
+    this.callConfirmation.set(null);
+    if (!number) return;
+    if (this.native.openDialler(number)) return;
+    this.document.defaultView?.location.assign(`tel:${number}`);
   }
 
   protected openIn(packageName: WhatsAppPackage): void {
@@ -127,6 +147,14 @@ export class CallHistory {
     return digitsOnly(call.number).length >= 7;
   }
 
+  protected canCall(call: DeviceCallHistoryEntry): boolean {
+    return digitsOnly(call.number).length >= 3;
+  }
+
+  protected confirmationNumber(call: DeviceCallHistoryEntry): string {
+    return displayPhone(call.number);
+  }
+
   private dayLabel(timestamp: number): string {
     const date = new Date(timestamp);
     const today = new Date();
@@ -140,5 +168,12 @@ export class CallHistory {
       day: 'numeric',
       month: 'short',
     }).format(date);
+  }
+
+  private dialableNumber(number: string): string {
+    const sanitized = number.trim().replace(/[^\d+*#,;]/g, '');
+    return sanitized.startsWith('+')
+      ? `+${sanitized.slice(1).replace(/\+/g, '')}`
+      : sanitized.replace(/\+/g, '');
   }
 }

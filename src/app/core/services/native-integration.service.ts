@@ -7,6 +7,7 @@ export type WhatsAppPackage = 'com.whatsapp' | 'com.whatsapp.w4b';
 interface Click2ChatNativeBridge {
   readClipboard(): string;
   availableWhatsAppApps(): string;
+  openDialler(number: string): void;
   openWhatsApp(number: string, message: string): void;
   openWhatsAppIn(number: string, message: string, packageName: string): void;
   deviceCallHistorySupported(): boolean;
@@ -44,6 +45,13 @@ export class NativeIntegrationService {
     const bridge = this.bridge();
     if (!bridge) return false;
     bridge.openWhatsApp(number, message);
+    return true;
+  }
+
+  openDialler(number: string): boolean {
+    const bridge = this.bridge();
+    if (!bridge) return false;
+    bridge.openDialler(number);
     return true;
   }
 

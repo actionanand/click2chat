@@ -79,19 +79,34 @@
                     }
                   </span>
                 </div>
-                <button
-                  class="message-button"
-                  type="button"
-                  [disabled]="!canMessage(call)"
-                  [attr.aria-label]="
-                    canMessage(call)
-                      ? 'Message ' + displayName(call) + ' on WhatsApp'
-                      : 'This call has no messageable number'
-                  "
-                  (click)="openChat(call)"
-                >
-                  <app-icon name="message" />
-                </button>
+                <div class="call-actions">
+                  <button
+                    class="call-button"
+                    type="button"
+                    [disabled]="!canCall(call)"
+                    [attr.aria-label]="
+                      canCall(call)
+                        ? 'Call ' + displayName(call)
+                        : 'This call has no callable number'
+                    "
+                    (click)="confirmCall(call)"
+                  >
+                    <app-icon name="phone" />
+                  </button>
+                  <button
+                    class="message-button"
+                    type="button"
+                    [disabled]="!canMessage(call)"
+                    [attr.aria-label]="
+                      canMessage(call)
+                        ? 'Message ' + displayName(call) + ' on WhatsApp'
+                        : 'This call has no messageable number'
+                    "
+                    (click)="openChat(call)"
+                  >
+                    <app-icon name="message" />
+                  </button>
+                </div>
               </article>
             }
           </div>
@@ -100,6 +115,15 @@
     </div>
   }
 </div>
+
+@if (callConfirmation(); as selectedCall) {
+  <app-call-confirmation
+    [contactName]="displayName(selectedCall)"
+    [phoneNumber]="confirmationNumber(selectedCall)"
+    (cancelled)="cancelCall()"
+    (confirmed)="call()"
+  />
+}
 
 @if (appChoice(); as choice) {
   <app-whatsapp-app-chooser
