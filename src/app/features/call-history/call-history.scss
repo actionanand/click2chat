@@ -38,6 +38,7 @@
   padding: clamp(1.25rem, 4vw, 2rem);
 }
 .platform-icon,
+.permission-icon,
 .empty-icon,
 .error-icon {
   display: grid;
@@ -49,12 +50,15 @@
   background: var(--primary-soft);
 }
 .platform-icon app-icon,
+.permission-icon app-icon,
 .empty-icon app-icon,
 .error-icon app-icon {
   width: 1.65rem;
   height: 1.65rem;
 }
 .platform-card h2,
+.permission-card h2,
+.permission-off-card h2,
 .loading-card h2,
 .empty-card h2,
 .error-card h2 {
@@ -62,12 +66,63 @@
   font-size: 1.3rem;
 }
 .platform-card p:not(.eyebrow),
+.permission-card p:not(.eyebrow),
+.permission-off-card p,
 .loading-card p,
 .empty-card p,
 .error-card p {
   margin: 0;
   color: var(--text-muted);
   line-height: 1.55;
+}
+.permission-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.1rem 1.2rem;
+  margin-top: 2rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+.permission-copy {
+  min-width: 0;
+}
+.permission-copy h2 {
+  margin-bottom: 0.65rem;
+}
+.permission-copy p + p {
+  margin-top: 0.65rem;
+}
+.permission-copy a,
+.privacy-footer a {
+  color: var(--primary-strong);
+  font-weight: 700;
+  text-underline-offset: 0.2em;
+}
+.permission-copy a {
+  display: inline-block;
+  margin-top: 0.85rem;
+}
+.rationale-note {
+  padding: 0.75rem;
+  border: 1px solid var(--primary-border);
+  border-radius: 0.85rem;
+  background: var(--primary-soft);
+}
+.permission-actions {
+  display: grid;
+  grid-column: 2;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.permission-off-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+}
+.permission-off-card button {
+  margin-top: 0.75rem;
 }
 .privacy-pill {
   display: inline-flex;
@@ -206,6 +261,15 @@
   cursor: not-allowed;
   transform: none;
 }
+.privacy-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 2rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -220,6 +284,12 @@
   }
   .platform-card {
     grid-template-columns: 1fr;
+  }
+  .permission-card {
+    grid-template-columns: 1fr;
+  }
+  .permission-actions {
+    grid-column: 1;
   }
   .privacy-pill {
     grid-column: 1;

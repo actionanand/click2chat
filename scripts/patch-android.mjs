@@ -307,6 +307,21 @@ public class MainActivity extends BridgeActivity {
     }
 
     @JavascriptInterface
+    public boolean deviceCallHistoryPermissionGranted() {
+      return DEVICE_CALL_LOG_ENABLED && (
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+          || checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+      );
+    }
+
+    @JavascriptInterface
+    public boolean shouldShowCallHistoryPermissionRationale() {
+      return DEVICE_CALL_LOG_ENABLED
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        && shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG);
+    }
+
+    @JavascriptInterface
     public void requestDeviceCallHistory() {
       runOnUiThread(() -> {
         if (!DEVICE_CALL_LOG_ENABLED) {

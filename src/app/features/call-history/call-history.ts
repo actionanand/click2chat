@@ -26,9 +26,18 @@ export class CallHistory {
   private readonly native = inject(NativeIntegrationService);
   private readonly document = inject(DOCUMENT);
   protected readonly supported = this.native.deviceCallHistorySupported();
+  protected readonly callHistoryLimit = environment.callHistoryLimit;
+  protected readonly privacyPolicyUrl = environment.privacyPolicyUrl;
   protected readonly calls = signal<readonly DeviceCallHistoryEntry[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal('');
+  protected readonly permissionGranted = signal(this.native.deviceCallHistoryPermissionGranted());
+  protected readonly permissionDisclosureVisible = signal(
+    this.supported && !this.permissionGranted(),
+  );
+  protected readonly permissionRationaleNeeded = signal(
+    this.native.shouldShowCallHistoryPermissionRationale(),
+  );
   protected readonly callConfirmation = signal<DeviceCallHistoryEntry | null>(null);
   protected readonly appChoice = signal<{
     readonly number: string;
@@ -45,17 +54,43 @@ export class CallHistory {
 
   constructor() {
     afterNextRender(() => {
-      if (this.supported) void this.loadCalls();
+      if (this.supported && this.permissionGranted()) void this.loadCalls();
     });
   }
 
-  protected async loadCalls(): Promise<void> {
+  protected showPermissionDisclosure(): void {
+    this.error.set('');
+    this.permissionRationaleNeeded.set(this.native.shouldShowCallHistoryPermissionRationale());
+    this.permissionDisclosureVisible.set(true);
+  }
+
+  protected dismissPermissionDisclosure(): void {
+    this.permissionDisclosureVisible.set(false);
+  }
+
+  protected requestCallHistoryPermission(): void {
+    this.permissionDisclosureVisible.set(false);
+    void this.loadCalls(true);
+  }
+
+  protected async loadCalls(allowPermissionRequest = false): Promise<void> {
     if (this.loading()) return;
+    const granted = this.native.deviceCallHistoryPermissionGranted();
+    this.permissionGranted.set(granted);
+    if (!granted && !allowPermissionRequest) {
+      this.calls.set([]);
+      this.showPermissionDisclosure();
+      return;
+    }
     this.loading.set(true);
     this.error.set('');
     try {
       this.calls.set(await this.native.requestDeviceCallHistory());
+      this.permissionGranted.set(true);
     } catch (error: unknown) {
+      this.calls.set([]);
+      this.permissionGranted.set(this.native.deviceCallHistoryPermissionGranted());
+      this.permissionRationaleNeeded.set(this.native.shouldShowCallHistoryPermissionRationale());
       this.error.set(
         error instanceof Error ? error.message : 'Your recent calls could not be loaded.',
       );

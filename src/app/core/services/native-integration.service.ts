@@ -11,6 +11,8 @@ interface Click2ChatNativeBridge {
   openWhatsApp(number: string, message: string): void;
   openWhatsAppIn(number: string, message: string, packageName: string): void;
   deviceCallHistorySupported(): boolean;
+  deviceCallHistoryPermissionGranted(): boolean;
+  shouldShowCallHistoryPermissionRationale(): boolean;
   requestDeviceCallHistory(): void;
 }
 
@@ -64,6 +66,14 @@ export class NativeIntegrationService {
 
   deviceCallHistorySupported(): boolean {
     return this.bridge()?.deviceCallHistorySupported() ?? false;
+  }
+
+  deviceCallHistoryPermissionGranted(): boolean {
+    return this.bridge()?.deviceCallHistoryPermissionGranted() ?? false;
+  }
+
+  shouldShowCallHistoryPermissionRationale(): boolean {
+    return this.bridge()?.shouldShowCallHistoryPermissionRationale() ?? false;
   }
 
   requestDeviceCallHistory(): Promise<readonly DeviceCallHistoryEntry[]> {
