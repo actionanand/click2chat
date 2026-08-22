@@ -28,8 +28,12 @@ const splashSourcePath = resolve('public/click2chat.png');
 const splashLogoPath = resolve(resPath, 'drawable-nodpi/click2chat_splash_logo.png');
 const splashIconPath = resolve(resPath, 'drawable/click2chat_splash_icon.xml');
 const splashPath = resolve(resPath, 'drawable/splash.xml');
-const enableCallLog = process.env.ENABLE_DEVICE_CALL_LOG !== 'false';
 const environmentSource = await readFile(resolve('src/environments/environment.ts'), 'utf8');
+const enableMatch = environmentSource.match(/enableCallHistory\s*:\s*(true|false)/);
+if (!enableMatch) {
+  throw new Error('enableCallHistory must be true or false in src/environments/environment.ts.');
+}
+const enableCallLog = enableMatch[1] === 'true';
 const limitMatch = environmentSource.match(/callHistoryLimit\s*:\s*(\d+)/);
 const callHistoryLimit = limitMatch ? Number(limitMatch[1]) : 100;
 
@@ -183,32 +187,35 @@ await ensureThemes(nightStylesPath, true);
 
 const source = `package ${appId};
 
-import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.CallLog;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsetsController;
 import android.webkit.JavascriptInterface;
+${
+  enableCallLog
+    ? `import android.Manifest;
+import android.database.Cursor;
+import android.provider.CallLog;`
+    : ''
+}
 
 import com.getcapacitor.BridgeActivity;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+${enableCallLog ? 'import org.json.JSONObject;' : ''}
 
 public class MainActivity extends BridgeActivity {
-  private static final boolean DEVICE_CALL_LOG_ENABLED = ${enableCallLog};
-  private static final int CALL_LOG_PERMISSION_REQUEST = 4801;
+  ${enableCallLog ? 'private static final int CALL_LOG_PERMISSION_REQUEST = 4801;' : ''}
   private boolean darkMode;
 
   @Override
@@ -227,7 +234,9 @@ public class MainActivity extends BridgeActivity {
     applySystemBars(darkMode);
   }
 
-  @Override
+  ${
+    enableCallLog
+      ? `@Override
   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
     if (requestCode == CALL_LOG_PERMISSION_REQUEST) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -238,6 +247,8 @@ public class MainActivity extends BridgeActivity {
       return;
     }
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }`
+      : ''
   }
 
   public class SystemBarsBridge {
@@ -301,14 +312,16 @@ public class MainActivity extends BridgeActivity {
       });
     }
 
-    @JavascriptInterface
+    ${
+      enableCallLog
+        ? `@JavascriptInterface
     public boolean deviceCallHistorySupported() {
-      return DEVICE_CALL_LOG_ENABLED;
+      return true;
     }
 
     @JavascriptInterface
     public boolean deviceCallHistoryPermissionGranted() {
-      return DEVICE_CALL_LOG_ENABLED && (
+      return (
         Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
       );
@@ -316,18 +329,13 @@ public class MainActivity extends BridgeActivity {
 
     @JavascriptInterface
     public boolean shouldShowCallHistoryPermissionRationale() {
-      return DEVICE_CALL_LOG_ENABLED
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+      return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
         && shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG);
     }
 
     @JavascriptInterface
     public void requestDeviceCallHistory() {
       runOnUiThread(() -> {
-        if (!DEVICE_CALL_LOG_ENABLED) {
-          dispatchNativeResult("call-history", false, "", "Call history is disabled in this build.");
-          return;
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
           && checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
           requestPermissions(new String[] { Manifest.permission.READ_CALL_LOG }, CALL_LOG_PERMISSION_REQUEST);
@@ -335,6 +343,8 @@ public class MainActivity extends BridgeActivity {
         }
         dispatchDeviceCallHistory();
       });
+    }`
+        : ''
     }
   }
 
@@ -351,7 +361,9 @@ public class MainActivity extends BridgeActivity {
     }
   }
 
-  private void dispatchDeviceCallHistory() {
+  ${
+    enableCallLog
+      ? `private void dispatchDeviceCallHistory() {
     JSONArray calls = new JSONArray();
     String[] projection = new String[] {
       CallLog.Calls.NUMBER, CallLog.Calls.TYPE, CallLog.Calls.DATE,
@@ -405,6 +417,8 @@ public class MainActivity extends BridgeActivity {
         + "message:" + JSONObject.quote(message == null ? "" : message) + "}}));";
       getBridge().getWebView().evaluateJavascript(script, null);
     });
+  }`
+      : ''
   }
 
   @SuppressWarnings("deprecation")

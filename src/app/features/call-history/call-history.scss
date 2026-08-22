@@ -91,16 +91,6 @@
 .permission-copy p + p {
   margin-top: 0.65rem;
 }
-.permission-copy a,
-.privacy-footer a {
-  color: var(--primary-strong);
-  font-weight: 700;
-  text-underline-offset: 0.2em;
-}
-.permission-copy a {
-  display: inline-block;
-  margin-top: 0.85rem;
-}
 .rationale-note {
   padding: 0.75rem;
   border: 1px solid var(--primary-border);
@@ -260,15 +250,6 @@
   background: var(--surface-raised);
   cursor: not-allowed;
   transform: none;
-}
-.privacy-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  margin-top: 2rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
 }
 @keyframes spin {
   to {

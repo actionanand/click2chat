@@ -47,9 +47,6 @@
             only after you choose Continue.
           </p>
         }
-        <a [href]="privacyPolicyUrl" target="_blank" rel="noopener noreferrer"
-          >Read the Click2Chat privacy policy</a
-        >
       </div>
       <div class="permission-actions">
         <button class="secondary-button" type="button" (click)="dismissPermissionDisclosure()">
@@ -163,11 +160,6 @@
       }
     </div>
   }
-
-  <footer class="privacy-footer">
-    <app-icon name="shield" />
-    <a [href]="privacyPolicyUrl" target="_blank" rel="noopener noreferrer">Privacy policy</a>
-  </footer>
 </div>
 
 @if (callConfirmation(); as selectedCall) {

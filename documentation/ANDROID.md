@@ -96,23 +96,25 @@ npm run generate-keystore -- --password 'YOUR_STRONG_PASSWORD'
 
 Never commit the keystore, its Base64 representation, or passwords. Keep an offline backup of the release key.
 
-## Device call history
+## Optional device call history
 
-The Android build declares `READ_CALL_LOG`, requests it at runtime, and reads at most the 100 most recent entries after the user grants access. The data remains on the device and is not persisted by Click2Chat. The web build does not request or emulate call history.
+The Play-ready configuration sets `enableCallHistory: false` in `src/environments/environment.ts`. This removes the Recent calls route and navigation from the Angular build. `scripts/patch-android.mjs` also removes `READ_CALL_LOG` from the Android manifest and omits the related native imports, permission callbacks, bridge methods, and query code.
+
+For non-Play distribution, setting `enableCallHistory: true` enables the optional feature. That build declares `READ_CALL_LOG`, requests it at runtime, and reads at most the configured number of recent entries after the user grants access. The data remains on the device and is not persisted by Click2Chat.
 
 Click2Chat does not request call-history permission automatically when the app
 opens. When access has not been granted, the Recent calls screen first shows an
 in-app disclosure describing the call-log fields accessed, their on-device use,
 retention and sharing behavior. The disclosure provides **Not now** and
-**Continue** actions and links to the public privacy policy. Android's runtime
+**Continue** actions. Android's runtime
 permission dialog appears only after the user chooses Continue. A denial leaves
 New chat available and is not retried until the user explicitly reviews the
 access request again.
 
-To create a build without call-history permission:
+After changing the environment flag, regenerate and patch the native application:
 
 ```bash
-ENABLE_DEVICE_CALL_LOG=false npm run android:sync
+npm run android:sync
 ```
 
 `READ_CALL_LOG` is a restricted permission in Google Play. Confirm that the intended distribution and store listing satisfy the current Google Play permission policy before submission. The direct-number WhatsApp feature remains usable when permission is denied or excluded.
@@ -134,10 +136,10 @@ Suggested review walkthrough:
 
 Record these steps in the video supplied with the Play permissions declaration. Keep the declaration, review instructions, screenshots, store listing, Data safety answers, and privacy policy consistent with the submitted build.
 
-Opening the dialler does not by itself make Click2Chat Android's default Phone handler or create eligibility for Call Log access. Submit `READ_CALL_LOG` only if the app truthfully qualifies for one of Google Play's currently permitted use cases and the declaration names that use case accurately. If it does not qualify, create the Play build with call history disabled:
+Opening the dialler does not by itself make Click2Chat Android's default Phone handler or create eligibility for Call Log access. Submit `READ_CALL_LOG` only if the app truthfully qualifies for one of Google Play's currently permitted use cases and the declaration names that use case accurately. For the Play build, keep call history disabled in `src/environments/environment.ts`:
 
-```bash
-ENABLE_DEVICE_CALL_LOG=false npm run android:sync
+```ts
+enableCallHistory: false,
 ```
 
 Before uploading a replacement bundle, remove or deactivate rejected bundles on every active testing and production track that still contain the permission. A bundle without `READ_CALL_LOG` can retain direct-number WhatsApp chat and dialler functionality, but it cannot show the device's recent-call list.

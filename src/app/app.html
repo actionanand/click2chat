@@ -3,14 +3,16 @@
   <div class="header-inner">
     <a class="brand" routerLink="/" aria-label="Click2Chat home">
       <img ngSrc="click2chat.png" width="46" height="46" priority alt="" />
-      <span><strong>Click2Chat</strong><small>Call. Connect. Chat.</small></span>
+      <span><strong>Click2Chat</strong><small>Message without saving</small></span>
     </a>
-    <nav class="desktop-nav" aria-label="Primary navigation">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        ><app-icon name="history" /> Recent calls</a
-      >
-      <a routerLink="/new-chat" routerLinkActive="active"><app-icon name="message" /> New chat</a>
-    </nav>
+    @if (callHistoryEnabled) {
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+          ><app-icon name="history" /> Recent calls</a
+        >
+        <a routerLink="/new-chat" routerLinkActive="active"><app-icon name="message" /> New chat</a>
+      </nav>
+    }
     <app-select-picker
       class="theme-picker"
       [value]="theme.preference()"
@@ -22,11 +24,13 @@
   </div>
 </header>
 <main id="main-content" tabindex="-1"><router-outlet /></main>
-<nav class="mobile-nav" aria-label="Primary navigation">
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-    ><app-icon name="history" /><span>Recent calls</span></a
-  >
-  <a routerLink="/new-chat" routerLinkActive="active"
-    ><app-icon name="message" /><span>New chat</span></a
-  >
-</nav>
+@if (callHistoryEnabled) {
+  <nav class="mobile-nav" aria-label="Primary navigation">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ><app-icon name="history" /><span>Recent calls</span></a
+    >
+    <a routerLink="/new-chat" routerLinkActive="active"
+      ><app-icon name="message" /><span>New chat</span></a
+    >
+  </nav>
+}

@@ -27,7 +27,6 @@ export class CallHistory {
   private readonly document = inject(DOCUMENT);
   protected readonly supported = this.native.deviceCallHistorySupported();
   protected readonly callHistoryLimit = environment.callHistoryLimit;
-  protected readonly privacyPolicyUrl = environment.privacyPolicyUrl;
   protected readonly calls = signal<readonly DeviceCallHistoryEntry[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal('');
