@@ -26,19 +26,68 @@
       </div>
       <span class="privacy-pill"><app-icon name="shield" /> Private by design</span>
     </section>
+  } @else if (permissionDisclosureVisible()) {
+    <section class="permission-card card" aria-labelledby="call-log-disclosure-title">
+      <span class="permission-icon"><app-icon name="history" /></span>
+      <div class="permission-copy">
+        <p class="eyebrow">Your choice</p>
+        <h2 id="call-log-disclosure-title">Show recent calls?</h2>
+        <p>
+          Click2Chat accesses your phone's recent call history—including phone numbers, caller names
+          when available, call type, time, and duration—to display up to
+          {{ callHistoryLimit }} recent calls in this app.
+        </p>
+        <p>
+          This information is processed only on your device. It is not saved, uploaded, or shared
+          with the developer. You can continue using New chat without allowing access.
+        </p>
+        @if (permissionRationaleNeeded()) {
+          <p class="rationale-note">
+            Recent calls cannot load without this access. Android will ask for your permission again
+            only after you choose Continue.
+          </p>
+        }
+        <a [href]="privacyPolicyUrl" target="_blank" rel="noopener noreferrer"
+          >Read the Click2Chat privacy policy</a
+        >
+      </div>
+      <div class="permission-actions">
+        <button class="secondary-button" type="button" (click)="dismissPermissionDisclosure()">
+          Not now
+        </button>
+        <button class="primary-button" type="button" (click)="requestCallHistoryPermission()">
+          Continue
+        </button>
+      </div>
+    </section>
   } @else if (loading() && !calls().length) {
     <section class="loading-card card" aria-live="polite">
       <span class="spinner" aria-hidden="true"></span>
       <h2>Loading recent calls</h2>
-      <p>Android may ask for call history permission.</p>
+      <p>Reading call history from this device.</p>
     </section>
   } @else if (error()) {
     <section class="error-card card" role="alert">
       <span class="error-icon"><app-icon name="phone-missed" /></span>
       <h2>Call history is unavailable</h2>
       <p>{{ error() }}</p>
-      <button class="primary-button" type="button" (click)="loadCalls()">
-        <app-icon name="refresh" /> Try again
+      @if (permissionGranted()) {
+        <button class="primary-button" type="button" (click)="loadCalls()">
+          <app-icon name="refresh" /> Try again
+        </button>
+      } @else {
+        <button class="primary-button" type="button" (click)="showPermissionDisclosure()">
+          Review access
+        </button>
+      }
+    </section>
+  } @else if (!permissionGranted()) {
+    <section class="permission-off-card card" aria-labelledby="permission-off-title">
+      <span class="permission-icon"><app-icon name="shield" /></span>
+      <h2 id="permission-off-title">Recent calls are off</h2>
+      <p>Nothing was accessed. New chat remains available without call-history permission.</p>
+      <button class="primary-button" type="button" (click)="showPermissionDisclosure()">
+        Enable recent calls
       </button>
     </section>
   } @else if (!calls().length) {
@@ -114,6 +163,11 @@
       }
     </div>
   }
+
+  <footer class="privacy-footer">
+    <app-icon name="shield" />
+    <a [href]="privacyPolicyUrl" target="_blank" rel="noopener noreferrer">Privacy policy</a>
+  </footer>
 </div>
 
 @if (callConfirmation(); as selectedCall) {

@@ -100,6 +100,15 @@ Never commit the keystore, its Base64 representation, or passwords. Keep an offl
 
 The Android build declares `READ_CALL_LOG`, requests it at runtime, and reads at most the 100 most recent entries after the user grants access. The data remains on the device and is not persisted by Click2Chat. The web build does not request or emulate call history.
 
+Click2Chat does not request call-history permission automatically when the app
+opens. When access has not been granted, the Recent calls screen first shows an
+in-app disclosure describing the call-log fields accessed, their on-device use,
+retention and sharing behavior. The disclosure provides **Not now** and
+**Continue** actions and links to the public privacy policy. Android's runtime
+permission dialog appears only after the user chooses Continue. A denial leaves
+New chat available and is not retried until the user explicitly reviews the
+access request again.
+
 To create a build without call-history permission:
 
 ```bash
