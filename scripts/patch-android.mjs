@@ -268,6 +268,13 @@ public class MainActivity extends BridgeActivity {
     }
 
     @JavascriptInterface
+    public void openDialler(String number) {
+      runOnUiThread(() ->
+        startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(number))))
+      );
+    }
+
+    @JavascriptInterface
     public void openWhatsApp(String number, String message) {
       runOnUiThread(() -> {
         String url = whatsAppUrl(number, message);

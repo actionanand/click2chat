@@ -108,6 +108,31 @@ ENABLE_DEVICE_CALL_LOG=false npm run android:sync
 
 `READ_CALL_LOG` is a restricted permission in Google Play. Confirm that the intended distribution and store listing satisfy the current Google Play permission policy before submission. The direct-number WhatsApp feature remains usable when permission is denied or excluded.
 
+## Calling from recent calls
+
+Each recent-call row includes a phone button. Tapping it first displays an in-app confirmation with **Cancel** and **Call** actions. Call opens Android's phone dialler with the number prefilled; the user must review the number and tap the phone app's Call button to place the call.
+
+The native bridge uses `Intent.ACTION_DIAL`. Click2Chat does not place a call automatically and does not request `android.permission.CALL_PHONE`.
+
+Suggested review walkthrough:
+
+1. Open Click2Chat and choose **Recent calls**.
+2. Grant call-history access when Android asks.
+3. Tap the phone icon beside a recent call.
+4. Show that **Cancel** returns to Click2Chat without opening another app.
+5. Tap the phone icon again, choose **Call**, and show the Android dialler with the number prefilled.
+6. Return to Click2Chat and demonstrate that the WhatsApp action remains separate.
+
+Record these steps in the video supplied with the Play permissions declaration. Keep the declaration, review instructions, screenshots, store listing, Data safety answers, and privacy policy consistent with the submitted build.
+
+Opening the dialler does not by itself make Click2Chat Android's default Phone handler or create eligibility for Call Log access. Submit `READ_CALL_LOG` only if the app truthfully qualifies for one of Google Play's currently permitted use cases and the declaration names that use case accurately. If it does not qualify, create the Play build with call history disabled:
+
+```bash
+ENABLE_DEVICE_CALL_LOG=false npm run android:sync
+```
+
+Before uploading a replacement bundle, remove or deactivate rejected bundles on every active testing and production track that still contain the permission. A bundle without `READ_CALL_LOG` can retain direct-number WhatsApp chat and dialler functionality, but it cannot show the device's recent-call list.
+
 ## WhatsApp behavior and theme
 
 - If both WhatsApp and WhatsApp Business are installed, Click2Chat shows the in-app chooser using `public/whatsapp.png` and `public/whatsapp-business.png`.
